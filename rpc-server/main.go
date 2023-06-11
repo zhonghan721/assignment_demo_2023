@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 
 	rpc "github.com/TikTokTechImmersion/assignment_demo_2023/rpc-server/kitex_gen/rpc/imservice"
@@ -9,7 +11,31 @@ import (
 	etcd "github.com/kitex-contrib/registry-etcd"
 )
 
+var (
+	rdb = &RedisClient{}
+)
+
 func main() {
+	//client := redis.NewClient(&redis.Options{
+	//	Addr:     "redis:6379",
+	//	Password: "", // no password set
+	//	DB:       0,  // use default DB
+	//})
+	//
+	//err := client
+	//if err != nil {
+	//	errMsg := fmt.Sprintf("failed to init Redis client, err: %v", err)
+	//	log.Fatal(errMsg)
+	//}
+
+	ctx := context.Background()
+
+	err := rdb.InitClient(ctx, "redis:6379", "")
+	if err != nil {
+		errMsg := fmt.Sprintf("failed to init Redis client, err: %v", err)
+		log.Fatal(errMsg)
+	}
+
 	r, err := etcd.NewEtcdRegistry([]string{"etcd:2379"}) // r should not be reused.
 	if err != nil {
 		log.Fatal(err)
